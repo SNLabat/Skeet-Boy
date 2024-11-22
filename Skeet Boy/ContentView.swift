@@ -9,7 +9,7 @@ struct ContentView: View {
             Color.black.edgesIgnoringSafeArea(.all)
             
             if authModel.isAuthenticated {
-                TimelineView(authModel: authModel)
+                MainContainerView(authModel: authModel)
             } else {
                 LoginView(authModel: authModel)
             }

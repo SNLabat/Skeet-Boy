@@ -5,10 +5,14 @@ struct AuthResponse: Codable {
     let refreshJwt: String
     let handle: String
     let did: String
+    let avatarUrl: String?
 }
 
 class AuthModel: ObservableObject {
+    static let shared = AuthModel()
+    
     @Published var isAuthenticated = false
+    @Published var userAvatar: String?
     private let baseURL = "https://bsky.social/xrpc/"
     private var session: AuthResponse?
     
@@ -40,6 +44,8 @@ class AuthModel: ObservableObject {
             UserDefaults.standard.set(response.accessJwt, forKey: "accessJwt")
             UserDefaults.standard.set(response.refreshJwt, forKey: "refreshJwt")
             UserDefaults.standard.set(response.handle, forKey: "handle")
+            UserDefaults.standard.set(response.did, forKey: "userDID")
+            UserDefaults.standard.set(response.avatarUrl, forKey: "userAvatar")
         }
     }
     
@@ -47,6 +53,8 @@ class AuthModel: ObservableObject {
         UserDefaults.standard.removeObject(forKey: "accessJwt")
         UserDefaults.standard.removeObject(forKey: "refreshJwt")
         UserDefaults.standard.removeObject(forKey: "handle")
+        UserDefaults.standard.removeObject(forKey: "userDID")
+        UserDefaults.standard.removeObject(forKey: "userAvatar")
         DispatchQueue.main.async {
             self.session = nil
             self.isAuthenticated = false
@@ -61,10 +69,12 @@ class AuthModel: ObservableObject {
                 accessJwt: accessJwt,
                 refreshJwt: refreshJwt,
                 handle: handle,
-                did: "" // We don't need to store the DID for basic functionality
+                did: "", // We don't need to store the DID for basic functionality
+                avatarUrl: UserDefaults.standard.string(forKey: "userAvatar")
             )
             self.session = storedSession
             self.isAuthenticated = true
+            self.userAvatar = UserDefaults.standard.string(forKey: "userAvatar")
         }
     }
     
